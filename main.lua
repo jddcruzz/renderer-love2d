@@ -6,14 +6,22 @@ Sprite = require("src.graphics.objects.sprite")
 function love.load()
     
     renderer = Renderer.new()
-    renderer:addFrame("main")
 
-    f = renderer:getFrame("main")
-    cam = f:getCamera()
+    mainFrame = renderer:addFrame("main", true)
+    mainCam = mainFrame:getCamera()
 
     obj = Sprite.new("assets/images/pacman.png")
     obj.position.x = 50
-    obj.position.y = 50
+    obj.position.y = 25
+
+    local frameConfig = {
+        position = {x = 100, y = 25},
+        size = {w = 250, h = 50},
+        zIndex = 10
+    }
+    uiFrame = renderer:addFrame("ui", false, frameConfig)
+    uiCam = uiFrame:getCamera()
+
 end
 
 --// LOVE UPDATE
@@ -24,25 +32,26 @@ end
 --// LOVE DRAW
 function love.draw()
     renderer:addObject("main", obj)
+    renderer:addObject("ui", obj)
     renderer:draw()
 end
 
 function love.keypressed(key)
 
     if key == "up" then
-        cam.position.y = cam.position.y - 10
+        mainCam.position.y = mainCam.position.y - 10
     elseif key == "down" then
-        cam.position.y = cam.position.y + 10
+        mainCam.position.y = mainCam.position.y + 10
     elseif key == "left" then
-        cam.position.x = cam.position.x - 10
+        mainCam.position.x = mainCam.position.x - 10
     elseif key == "right" then
-        cam.position.x = cam.position.x + 10
+        mainCam.position.x = mainCam.position.x + 10
     end
 
     if key == "kp+" then
-        cam.zoom = cam.zoom + 0.1
+        mainCam.zoom = mainCam.zoom + 0.1
         elseif key == "kp-" then
-        cam.zoom = cam.zoom - 0.1
+        mainCam.zoom = mainCam.zoom - 0.1
     end
     --print(key)
 end

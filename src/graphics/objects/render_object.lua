@@ -13,6 +13,7 @@ function Object.new()
 end
 
 -- Solo para compatibilidad
-function Object:draw() end
+function Object:draw() 
+end
 
 return Object

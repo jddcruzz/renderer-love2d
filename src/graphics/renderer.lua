@@ -10,23 +10,46 @@ function Renderer.new()
     local self = setmetatable({}, Renderer)
 
     self._frames = {}   -- Frames a Rendererizar
-
-
+    self._orderedFrames = {}
 
     return self
 end
 
+-- Private functionsw
+function Renderer:_sortFrames()
+    table.sort(self._orderedFrames, function(a, b) 
+        return a.zIndex < b.zIndex
+    end)
+end
+
 -- Frames
-function Renderer:addFrame(id, zIndex, frame)
+function Renderer:addFrame(id, hasCamera, frameConfig)
     if not id then return end
 
-    frame = frame or Frame.new(true)
-    frame.zIndex = zIndex or 0
+    -- Crea y registra el frame
+    local frame = Frame.new(hasCamera, frameConfig)
+    frame.frameId = id
     self._frames[id] = frame
+
+    -- Frames ordenados
+    table.insert(self._orderedFrames, frame)
+    self:_sortFrames()
+    
+    return self._frames[id]
 end
 
 function Renderer:removeFrame(id)
+    -- Borra el frame
     self._frames[id] = nil
+    
+    -- Frames ordenados
+    for i, frame in ipairs(self._orderedFrames) do 
+        if frame.frameId == id then 
+            table.remove(self._orderedFrames, i)
+            break
+        end
+    end
+    self:_sortFrames()
 end
 
 function Renderer:getFrame(id)
@@ -43,22 +66,24 @@ end
 
 -- Render
 function Renderer:draw()
-    for id, frame in pairs(self._frames) do
+    for id, frame in ipairs(self._orderedFrames) do
         
         if frame.enabled then 
 
-            -- Guardar estado actual y aplica recorte para el frame
+            -- Guardar estado actual
             love.graphics.push("all")
+            -- Aplicar transformaciones del frame y scissor para limitar el area de dibujo
+            love.graphics.translate(frame.position.x, frame.position.y)
             love.graphics.setScissor(frame.position.x, frame.position.y, frame.size.w, frame.size.h)
             
             -- Transformaciones de la camara
             if frame.camera then
                 local cam = frame.camera
-                love.graphics.translate(-cam.position.x, -cam.position.y)
                 love.graphics.scale(cam.zoom, cam.zoom)
+                love.graphics.translate(-cam.position.x, -cam.position.y)
             end
             -- Dibujar objetos en el frame
-            for i, obj in pairs(frame.objects) do
+            for i, obj in ipairs(frame.objects) do
                 obj:draw()
             end
             -- Limpiar objetos
@@ -66,7 +91,7 @@ function Renderer:draw()
                 frame.objects[k] = nil
             end
 
-            -- Restaurar transformaciones
+            -- Restaura transformaciones
             love.graphics.pop()
 
             -- Dibujar limites del frame (opcional)
@@ -77,7 +102,6 @@ function Renderer:draw()
             end
 
         end
-
     end
 end
 
