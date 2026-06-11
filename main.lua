@@ -1,7 +1,7 @@
 --// Resources
 Renderer = require("src.graphics.renderer")
 Sprite = require("src.graphics.objects.sprite")
-
+Text = require("src.graphics.objects.text")
 --// LOVE LOAD
 function love.load()
     
@@ -22,6 +22,9 @@ function love.load()
     uiFrame = renderer:addFrame("ui", false, frameConfig)
     uiCam = uiFrame:getCamera()
 
+    txt =  Text.new("ajajaj")
+    txt.position.x = 75
+
 end
 
 --// LOVE UPDATE
@@ -33,25 +36,26 @@ end
 function love.draw()
     renderer:addObject("main", obj)
     renderer:addObject("ui", obj)
+    renderer:addObject("ui", txt)
     renderer:draw()
 end
 
 function love.keypressed(key)
 
     if key == "up" then
-        mainCam.position.y = mainCam.position.y - 10
+        uiFrame.position.y = uiFrame.position.y - 10
     elseif key == "down" then
-        mainCam.position.y = mainCam.position.y + 10
+        uiFrame.position.y = uiFrame.position.y + 10
     elseif key == "left" then
-        mainCam.position.x = mainCam.position.x - 10
+        uiFrame.position.x = uiFrame.position.x - 10
     elseif key == "right" then
-        mainCam.position.x = mainCam.position.x + 10
+        uiFrame.position.x = uiFrame.position.x + 10
     end
 
     if key == "kp+" then
-        mainCam.zoom = mainCam.zoom + 0.1
+        uiFrame.zoom = uiFrame.zoom + 0.1
         elseif key == "kp-" then
-        mainCam.zoom = mainCam.zoom - 0.1
+        uiFrame.zoom = uiFrame.zoom - 0.1
     end
     --print(key)
 end

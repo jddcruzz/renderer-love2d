@@ -84,7 +84,9 @@ function Renderer:draw()
             end
             -- Dibujar objetos en el frame
             for i, obj in ipairs(frame.objects) do
-                obj:draw()
+                if obj.enabled then 
+                    obj:draw()
+                end
             end
             -- Limpiar objetos
             for k in pairs(frame.objects) do
