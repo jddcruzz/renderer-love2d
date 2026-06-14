@@ -2,25 +2,43 @@
 local RenderObj = require("src.graphics.objects.render_object")
 
 --// Var
-
-local withoutTexture = "assets/images/notexture.png"
+local texturePath = "assets/images/notexture.png"
+local missingTexture = love.graphics.newImage(texturePath)
 
 --// Class
 local Sprite = setmetatable({}, {__index = RenderObj})
 Sprite.__index = Sprite
 
-function Sprite.new(img)
-    if type(img) ~= "string" or not love.filesystem.getInfo(img) then
-        img = withoutTexture
-    end
-
+function Sprite.new(file)
     local self = setmetatable(RenderObj.new(), Sprite)
 
+    local image = self:_resolveImage(file)
+
     self.super = RenderObj 
-    self.img = love.graphics.newImage(img)
+    self.img = image
     self.pivot = {x = 0.5, y = 0.5}
 
     return self
+end
+
+function Sprite:_resolveImage(file)
+    -- Caso 0. "image" se establece com textura perdida desde el inicio
+    local image = missingTexture
+    
+    -- Caso 1. "file" es una ruta valida hacia una imagen
+    if type(file) == "string" and love.filesystem.getInfo(file) then
+        image = love.graphics.newImage(file)
+    -- Caso 2. "file" es un objeto de imagen
+    elseif file.typeOf and file:typeOf("Image") then
+        image = file
+    end
+
+    return image
+end
+
+function Sprite:setImage(file)
+    local image = self:_resolveImage(file)
+    self.img = image
 end
 
 function Sprite:draw()

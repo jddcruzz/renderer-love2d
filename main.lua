@@ -25,11 +25,17 @@ function love.load()
     txt =  Text.new("ajajaj")
     txt.position.x = 75
 
+    TIME = 0
 end
 
 --// LOVE UPDATE
 function love.update(dt)
-   obj.rotation = obj.rotation + 0.5 * dt
+    TIME = TIME + dt
+    obj.rotation = obj.rotation + 0.5 * dt
+
+    if TIME >= 5 then
+        obj:setImage("?")
+    end
 end 
 
 --// LOVE DRAW

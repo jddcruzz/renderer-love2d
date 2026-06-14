@@ -36,7 +36,7 @@ end
 function Text:setFont(path, size)
     size = size or 12 
 
-    if path then
+    if path and love.filesystem.getInfo(path) then
         self.font = love.graphics.newFont(path, size)
     else
         self.font = love.graphics.newFont(size)
@@ -57,7 +57,7 @@ function Text:draw()
         love.graphics.translate(self.position.x, self.position.y)
         love.graphics.rotate(math.rad(self.rotation))
 
-        -- Crea y dibuja el texto
+        -- Dibuja el texto
         love.graphics.draw(self._textObj)
     end
 
