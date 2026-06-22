@@ -12,10 +12,9 @@ Sprite.__index = Sprite
 function Sprite.new(file)
     local self = setmetatable(RenderObj.new(), Sprite)
 
-    local image = self:_resolveImage(file)
-
-    self.super = RenderObj 
-    self.img = image
+    -- Config de imagen
+    self.imageFilter = {"nearest", "nearest"}
+    self.img = self:_resolveImage(file)
     self.pivot = {x = 0.5, y = 0.5}
 
     return self
@@ -24,14 +23,19 @@ end
 function Sprite:_resolveImage(file)
     -- Caso 0. "image" se establece com textura perdida desde el inicio
     local image = missingTexture
-    
+    file = file or "null"
+
     -- Caso 1. "file" es una ruta valida hacia una imagen
     if type(file) == "string" and love.filesystem.getInfo(file) then
         image = love.graphics.newImage(file)
+
     -- Caso 2. "file" es un objeto de imagen
-    elseif file.typeOf and file:typeOf("Image") then
+    elseif type(file) == "userdata" and file.typeOf and file:typeOf("Image") then
         image = file
     end
+    
+    -- Establece el filtro de la imagen
+    image:setFilter(self.imageFilter[1], self.imageFilter[2])
 
     return image
 end
@@ -42,14 +46,13 @@ function Sprite:setImage(file)
 end
 
 function Sprite:draw()
-    --love.graphics.push("all")
     if self.img then
-        -- Si img es un string, cargar la imagen, si no usar el objeto ya cargado
         local img = self.img
-        local origin = {
-            x = img:getWidth() * self.pivot.x,
-            y = img:getHeight() * self.pivot.y
-        }
+
+        local ox = img:getWidth() * self.pivot.x
+        local oy = img:getHeight() * self.pivot.y
+
+        -- Dibuja
         love.graphics.draw(
             img,
             -- Posicion y rotacion
@@ -65,10 +68,6 @@ function Sprite:draw()
         )
 
     end
-
-    --love.graphics.pop()
 end
-
-
 
 return Sprite

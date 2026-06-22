@@ -1,3 +1,4 @@
+--// Class
 local Object = {}
 Object.__index = Object
 
